@@ -1,8 +1,9 @@
 FROM gitpod/workspace-mongodb
 
+RUN apt -q update && apt upgrade
+
 USER gitpod
 
-# RUN sudo apt -q update && sudo apt upgrade
 #    sudo apt-get install -yq bastet && 
 #    sudo rm -rf /var/lib/apt/lists/*
 
