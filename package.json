@@ -1,0 +1,36 @@
+{
+  "name": "api-hapi",
+  "version": "1.0.0",
+  "description": "HAPI Restful server",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./src",
+    "seed": "make db",
+    "test": "make test",
+    "st": "standard ./src/**/*.js && standard ./tests/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcopgordillo/api-hapi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marcopgordillo/api-hapi/issues"
+  },
+  "homepage": "https://github.com/marcopgordillo/api-hapi#readme",
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^6.2.2",
+    "nodemon": "^2.0.2",
+    "superagent": "^5.1.2"
+  },
+  "dependencies": {
+    "@hapi/hapi": "^18.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "good": "^8.1.2",
+    "mongodb": "^3.4.1"
+  }
+}
