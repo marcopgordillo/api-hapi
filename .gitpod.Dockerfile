@@ -1,9 +1,10 @@
 FROM gitpod/workspace-mongodb
-                    
+
+RUN sudo apt-get -q update && #     sudo apt-get install -yq bastet && sudo rm -rf /var/lib/apt/lists/*
+
 USER gitpod
 ENV DATABASE_URL=mongodb://localhost:27017 DATABASE_NAME=blog
 
-RUN sudo apt-get -q update && #     sudo apt-get install -yq bastet && sudo rm -rf /var/lib/apt/lists/*
 # Install custom tools, runtime, etc. using apt-get
 # For example, the command below would install "bastet" - a command line tetris clone:
 #
