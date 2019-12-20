@@ -1,6 +1,6 @@
 FROM gitpod/workspace-mongodb
 
-RUN sudo apt -q update && sudo apt upgrade
+RUN sudo apt -q update && sudo apt upgrade -y && sudo rm -rf /var/lib/apt/lists/*
 
 USER gitpod
 
