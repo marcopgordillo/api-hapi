@@ -2,9 +2,9 @@ FROM gitpod/workspace-mongodb
 
 USER gitpod
 
-RUN sudo apt-get -q update && 
+# RUN sudo apt -q update && sudo apt upgrade
 #    sudo apt-get install -yq bastet && 
-    sudo rm -rf /var/lib/apt/lists/*
+#    sudo rm -rf /var/lib/apt/lists/*
 
 ENV DATABASE_URL=mongodb://localhost:27017 DATABASE_NAME=blog
 
