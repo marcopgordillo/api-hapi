@@ -1,10 +1,11 @@
 FROM gitpod/workspace-mongodb
 
+USER gitpod
+
 RUN sudo apt-get -q update && 
 #    sudo apt-get install -yq bastet && 
     sudo rm -rf /var/lib/apt/lists/*
 
-USER gitpod
 ENV DATABASE_URL=mongodb://localhost:27017 DATABASE_NAME=blog
 
 # Install custom tools, runtime, etc. using apt-get
