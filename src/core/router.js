@@ -8,7 +8,7 @@ module.exports = (mongoC) => [
     method: 'GET',
     path: '/',
     handler: (req, h) => {
-      return h.response('{"message": "Select a collection, e.g., /collections/messages"}').code(200)
+      return h.response('{"message": "Select a collection, e.g., /collections/messages"}').code(HttpStatus.OK)
     }
   },
   {
@@ -16,7 +16,7 @@ module.exports = (mongoC) => [
     path: '/collections/{collectionName}',
     handler: async (req, h) => {      
       const result = await mongoC.list(escapeHtml(req.params.collectionName))
-      return h.response(result).code(200)
+      return h.response(result).code(HttpStatus.OK)
     }
   },
   {
@@ -24,7 +24,7 @@ module.exports = (mongoC) => [
     path: '/collections/{collectionName}',
     handler: async (req, h) => {
       const result = await mongoC.insert(escapeHtml(req.params.collectionName), req.payload)
-      return h.response(result).code(201)
+      return h.response(result).code(HttpStatus.CREATED)
     }
   },
   {
@@ -33,7 +33,7 @@ module.exports = (mongoC) => [
     handler: async (req, h) => {
       const result = await mongoC.findOne(escapeHtml(req.params.collectionName), escapeHtml(req.params.id))
       if (result) {
-        return h.response(result.data).code(result.code)  
+        return h.response(result).code(HttpStatus.OK)
       }
       throw Boom.notFound(`Not Found ${req.params.id}`)
     }
