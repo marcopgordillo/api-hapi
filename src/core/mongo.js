@@ -1,6 +1,6 @@
 'use strict'
 
-const { MongoClient, ObjectID } = require('mongodb');
+const { MongoClient, ObjectID } = require('mongodb')
 
 class Mongo {
   constructor(url, dbName) {
@@ -65,9 +65,10 @@ class Mongo {
       const _collection = db.collection(collection)
       // Find one document
       try {
-        const data = await _collection.findOne({ _id: Mongo.id(id) })
+        const data = await _collection.findOne({ _id: ObjectID(id) })
         
-        return data ? { data, code: 200 } : { data: Mongo.notFound(id), code: 404 }
+        // return data ? { data, code: 200 } : { data: Mongo.notFound(id), code: 404 }
+        return data
       } catch(err) {
         console.error(err)
       } finally {
@@ -84,7 +85,7 @@ class Mongo {
       // Find one document
       try {
         const result = await _collection.updateOne(
-          { _id: Mongo.id(id) },
+          { _id: ObjectID(id) },
           { $set: payload },
           { safe: true, multi: false })
 
@@ -104,7 +105,7 @@ class Mongo {
       const _collection = db.collection(collection)
       // Find one document
       try {
-        const result = await _collection.deleteOne({ _id: Mongo.id(id) })
+        const result = await _collection.deleteOne({ _id: ObjectID(id) })
         return result
       } catch(err) {
         console.error(err)
@@ -117,11 +118,11 @@ class Mongo {
 
   close() { this.client.close() }
 
-  static notFound(id) {
-    return `{"error": "Not Found ${id}"}`
-  }
-
   static id (id) { return ObjectID(id) }
+
+  static statusResponse(message, statusCode) {
+    return { statusCode, message }
+  }
 }
 
 module.exports = Mongo
