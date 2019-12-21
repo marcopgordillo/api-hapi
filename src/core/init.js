@@ -17,15 +17,28 @@ const boot = async (server) => {
   }
 }
 
-const shutdown = (server) => {
+const shutdown = (server, mongoClient) => {
   console.log('stopping hapi server')
 
   server.stop({ timeout: 10000 }).then((err) => {
     console.log('hapi server stopped')
+    mongoClient.close()
     process.exit((err) ? 1 : 0)
   })
 }
 
+const eventListeners = (server, mongoClient) => {
+  process.on('unhandledRejection', (err) => {
+    console.log(err)
+    mongoClient.close()
+    process.exit(1)
+  })
+
+  process.on('SIGINT', () => {  
+    shutdown(server, mongoClient)
+  })
+}
+
 module.exports = {
-  create, boot, shutdown
+  create, boot, shutdown, eventListeners
 }

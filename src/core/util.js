@@ -1,4 +1,4 @@
-const { escapeJson } = require('@hapi/hoek')
+const { escapeJson, escapeHtml } = require('@hapi/hoek')
 
 const escJson = (obj) => {
   const string = JSON.stringify(obj)  
