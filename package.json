@@ -30,15 +30,12 @@
   "dependencies": {
     "@hapi/address": "^3.2.2",
     "@hapi/boom": "^8.0.1",
+    "@hapi/good": "^8.2.4",
     "@hapi/hapi": "^18.4.0",
     "@hapi/hoek": "^8.5.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
-    "good": "^8.1.2",
     "hapi-mongodb": "^9.0.0",
-    "http-status-codes": "^1.4.0",
-    "install": "^0.13.0",
-    "mongodb": "^3.4.1",
-    "npm": "^6.13.4"
+    "http-status-codes": "^1.4.0"
   }
 }
