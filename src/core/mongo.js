@@ -1,110 +1,78 @@
 'use strict'
 
-const { MongoClient, ObjectID } = require('mongodb')
+const Boom = require('@hapi/boom')
+const { escapeHtml } = require('@hapi/hoek')
 
-class Mongo {
-  constructor (url, dbName) {
-    this.connDB = Mongo.open(url)
-    this.dbName = dbName
-  }
-
-  static open (url) {
-    return new Promise((resolve, reject) => {
-      MongoClient.connect(url, { useUnifiedTopology: true, useNewUrlParser: true }, (err, client) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(client)
-        }
-      })
-    })
-  }
-
-  list (collection) {
-    return this.connDB
-      .then((client) => {
-        try {
-          return client
-            .db(this.dbName)
-            .collection(collection)
-            .find({}).toArray()
-        } catch (err) {
-          console.error('list error', err)
-        }
-      })
-  }
-
-  insert (collection, doc) {
-    return this.connDB
-      .then((client) => {
-        try {
-          return client
-            .db(this.dbName)
-            .collection(collection)
-            .insertOne(doc, {})
-        } catch (err) {
-          console.error(err)
-        }
-      })
-  }
-
-  findOne (collection, id) {
-    return this.connDB
-      .then((client) => {
-        try {
-          return client
-            .db(this.dbName)
-            .collection(collection)
-            .findOne({ _id: ObjectID(id) })
-        } catch (err) {
-          console.error(err)
-        }
-      })
-  }
-
-  updateOne (collection, id, payload) {
-    return this.connDB
-      .then((client) => {
-        try {
-          return client
-            .db(this.dbName)
-            .collection(collection)
-            .updateOne(
-              { _id: ObjectID(id) },
-              { $set: payload },
-              { safe: true, multi: false })
-        } catch (err) {
-          console.error(err)
-        }
-      })
-  }
-
-  deleteById (collection, id) {
-    return this.connDB
-      .then((client) => {
-        try {
-          return client
-            .db(this.dbName)
-            .collection(collection)
-            .deleteOne({ _id: ObjectID(id) })
-        } catch (err) {
-          console.error(err)
-        }
-      })
-  }
-
-  close () {
-    this.connDB
-      .then((client) => {
-        client.close()
-      })
-  }
-
-  static id (id) { return ObjectID(id) }
-
-  static statusResponse (message, statusCode) {
-    return { statusCode, message }
+const list = (req) => {
+  const db = req.mongo.db
+  const collectionName = escapeHtml(req.params.collectionName)
+  try {
+    return db.collection(collectionName)
+      .find({}).toArray()
+  } catch (err) {
+    console.error(err)
+    throw Boom.internal()
   }
 }
 
-module.exports = Mongo
+const insert = (req) => {
+  const db = req.mongo.db
+  const doc = req.payload
+  const collectionName = escapeHtml(req.params.collectionName)
+  try {
+    return db.collection(collectionName)
+      .insertOne(doc, {})
+  } catch (err) {
+    console.error(err)
+    throw Boom.internal()
+  }
+}
+
+const findOne = (req) => {
+  const db = req.mongo.db
+  const ObjectID = req.mongo.ObjectID
+  const id = escapeHtml(req.params.id)
+  const collectionName = escapeHtml(req.params.collectionName)
+  try {
+    return db.collection(collectionName)
+      .findOne({ _id: new ObjectID(id) })
+  } catch (err) {
+    console.error(err)
+    throw Boom.internal()
+  }
+}
+
+const updateOne = (req) => {
+  const db = req.mongo.db
+  const ObjectID = req.mongo.ObjectID
+  const id = escapeHtml(req.params.id)
+  const collectionName = escapeHtml(req.params.collectionName)
+  try {
+    return db.collection(collectionName)
+      .updateOne(
+        { _id: new ObjectID(id) },
+        { $set: req.payload },
+        { safe: true, multi: false })
+  } catch (err) {
+    console.error(err)
+    throw Boom.internal()
+  }
+}
+
+const deleteById = (req) => {
+  const db = req.mongo.db
+  const ObjectID = req.mongo.ObjectID
+  const id = escapeHtml(req.params.id)
+  const collectionName = escapeHtml(req.params.collectionName)
+  try {
+    return db.collection(collectionName)
+      .deleteOne({ _id: new ObjectID(id) })
+  } catch (err) {
+    console.error(err)
+    throw Boom.internal()
+  }
+}
+
+module.exports = {
+  list, insert, findOne, updateOne, deleteById
+}

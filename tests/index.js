@@ -3,16 +3,17 @@ const superagent = require('superagent')
 const expect = require('expect.js')
 const { before, after, describe, it } = require('mocha')
 
-const { init, Mongo, router } = require(path.join(__dirname, '../src/core'))
-const { PORT, DATABASE_URL, DATABASE_NAME } = require(path.join(__dirname, '../src/constants'))
+const { init } = require(path.join(__dirname, '../src/core'))
+const { PORT } = require(path.join(__dirname, '../src/constants'))
 
-let server, mongoC
+let server
 
-before(() => {
-  server = init.create(PORT)
-  mongoC = new Mongo(DATABASE_URL, DATABASE_NAME)
-  server.route(router(mongoC))
-  init.boot(server)
+before(async () => {
+  server = init.create()
+  await init.boot(server).catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
 })
 
 describe('express rest api server', () => {
@@ -21,7 +22,6 @@ describe('express rest api server', () => {
   it('post object', (done) => {
     superagent.post(`http://localhost:${PORT}/collections/test`)
       .send({ name: 'John', email: 'john@rpjs.co' })
-      .set('accept', 'json')
       .end((e, res) => {
         expect(e).to.eql(null)
         expect(res.body.ops.length).to.eql(1)
@@ -92,5 +92,5 @@ describe('express rest api server', () => {
 })
 
 after(() => {
-  init.shutdown(server, mongoC)
+  init.shutdown(server)
 })

@@ -1,22 +1,23 @@
 const path = require('path')
-const { escapeHtml } = require('@hapi/hoek')
 const Boom = require('@hapi/boom')
 const HttpStatus = require('http-status-codes')
-const Mongo = require(path.join(__dirname, './mongo'))
+const { list, insert, findOne, updateOne, deleteById } = require(path.join(__dirname, './mongo'))
 
-module.exports = (mongoC) => [
+const statusResponse = (message, statusCode) => ({ statusCode, message })
+
+module.exports = () => [
   {
     method: 'GET',
     path: '/',
     handler: (req, h) => {
-      return h.response(Mongo.statusResponse('Select a collection, e.g., /collections/messages', HttpStatus.OK))
+      return h.response(statusResponse('Select a collection, e.g., /collections/messages', HttpStatus.OK))
     }
   },
   {
     method: 'GET',
     path: '/collections/{collectionName}',
     handler: async (req, h) => {
-      const result = await mongoC.list(escapeHtml(req.params.collectionName))
+      const result = await list(req)
       return h.response(result).code(HttpStatus.OK)
     }
   },
@@ -24,7 +25,7 @@ module.exports = (mongoC) => [
     method: 'POST',
     path: '/collections/{collectionName}',
     handler: async (req, h) => {
-      const result = await mongoC.insert(escapeHtml(req.params.collectionName), req.payload)
+      const result = await insert(req)
       return h.response(result).code(HttpStatus.CREATED)
     }
   },
@@ -32,7 +33,7 @@ module.exports = (mongoC) => [
     method: 'GET',
     path: '/collections/{collectionName}/{id}',
     handler: async (req, h) => {
-      const result = await mongoC.findOne(escapeHtml(req.params.collectionName), escapeHtml(req.params.id))
+      const result = await findOne(req)
       if (result) {
         return h.response(result).code(HttpStatus.OK)
       }
@@ -43,13 +44,10 @@ module.exports = (mongoC) => [
     method: 'PUT',
     path: '/collections/{collectionName}/{id}',
     handler: async (req, h) => {
-      const result = await mongoC.updateOne(
-        escapeHtml(req.params.collectionName),
-        escapeHtml(req.params.id),
-        req.payload)
+      const result = await updateOne(req)
       if (result.result.n === 1) {
         if (result.result.nModified === 1) {
-          return h.response(Mongo.statusResponse('doc updated successfully', HttpStatus.OK))
+          return h.response(statusResponse('doc updated successfully', HttpStatus.OK))
         }
         return Boom.badRequest('doc not updated')
       }
@@ -60,9 +58,9 @@ module.exports = (mongoC) => [
     method: 'DELETE',
     path: '/collections/{collectionName}/{id}',
     handler: async (req, h) => {
-      const result = await mongoC.deleteById(escapeHtml(req.params.collectionName), escapeHtml(req.params.id))
+      const result = await deleteById(req)
       if (result.result.n === 1) {
-        return h.response(Mongo.statusResponse('doc deleted successfully', HttpStatus.OK))
+        return h.response(statusResponse('doc deleted successfully', HttpStatus.OK))
       }
       throw Boom.notFound(`Not Found ${req.params.id}`)
     }

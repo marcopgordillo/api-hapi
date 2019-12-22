@@ -1,7 +1,6 @@
 const path = require('path')
-const superagent = require('superagent')
 
-const { init, Mongo, util, router } = require(path.join(__dirname, './core'))
+const { init, util } = require(path.join(__dirname, './core'))
 
 const {
   DATABASE_URL,
@@ -11,24 +10,19 @@ const {
   TWITTER_CONSUMER_SECRET
 } = require(path.join(__dirname, './constants'))
 
-// Connect to mongo DB
-const mongoC = new Mongo(DATABASE_URL, DATABASE_NAME)
-
 // Initialize server
-const server = init.create(PORT)
-
-// Listen events of server
-init.eventListeners(server, mongoC)
-
-// Declare routes
-server.route(router(mongoC))
+const server = init.create()
 
 if (require.main === module) {
   console.info('Running app as a standalone')
   init.boot(server)
+  .catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
 } else {
   console.info('Running app as a module')
-  module.exports = {
+  /*module.exports = {
     server
-  }
+  }*/
 }
