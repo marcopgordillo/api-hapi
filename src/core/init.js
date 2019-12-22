@@ -27,12 +27,23 @@ const boot = async (server) => {
       },
       decorate: true
     }
-    await server.register(
+
+    const laabrOps = {
+      formats: { onPostStart: ':time :start :level :message' },
+      tokens: { start: () => '[start]' },
+      indent: 0
+    }
+
+    await server.register([
       {
         plugin: require('hapi-mongodb'),
         options: dbOps
+      },
+      {
+        plugin: require('laabr'),
+        options: laabrOps
       }
-    )
+    ])
 
     // Listen events of server
     eventListeners(server)
