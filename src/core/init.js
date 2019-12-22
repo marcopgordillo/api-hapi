@@ -10,7 +10,7 @@ const create = (port) => Hapi.server(
 const boot = async (server) => {
   try {
     await server.start()
-    console.log('Server running on %s', server.info.uri);
+    console.log('Server running on %s', server.info.uri)
   } catch (err) {
     console.error(err)
     process.exit(1)
@@ -34,7 +34,7 @@ const eventListeners = (server, mongoClient) => {
     process.exit(1)
   })
 
-  process.on('SIGINT', () => {  
+  process.on('SIGINT', () => {
     shutdown(server, mongoClient)
   })
 }

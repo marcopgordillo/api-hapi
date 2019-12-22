@@ -1,4 +1,5 @@
 const path = require('path')
+const superagent = require('superagent')
 
 const { init, Mongo, util, router } = require(path.join(__dirname, './core'))
 
@@ -28,6 +29,6 @@ if (require.main === module) {
 } else {
   console.info('Running app as a module')
   module.exports = {
-    server, PORT
+    server
   }
 }

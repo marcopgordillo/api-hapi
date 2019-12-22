@@ -2,19 +2,20 @@ const path = require('path')
 const { escapeHtml } = require('@hapi/hoek')
 const Boom = require('@hapi/boom')
 const HttpStatus = require('http-status-codes')
+const Mongo = require(path.join(__dirname, './mongo'))
 
 module.exports = (mongoC) => [
   {
     method: 'GET',
     path: '/',
     handler: (req, h) => {
-      return h.response('{"message": "Select a collection, e.g., /collections/messages"}').code(HttpStatus.OK)
+      return h.response(Mongo.statusResponse('Select a collection, e.g., /collections/messages', HttpStatus.OK))
     }
   },
   {
     method: 'GET',
     path: '/collections/{collectionName}',
-    handler: async (req, h) => {      
+    handler: async (req, h) => {
       const result = await mongoC.list(escapeHtml(req.params.collectionName))
       return h.response(result).code(HttpStatus.OK)
     }
@@ -46,12 +47,11 @@ module.exports = (mongoC) => [
         escapeHtml(req.params.collectionName),
         escapeHtml(req.params.id),
         req.payload)
-      
       if (result.result.n === 1) {
-        if (result.result.nModified === 1)
-          return h.response(Mongo.statusResponse("doc updated successfully", HttpStatus.OK))
-
-        return Boom.badRequest("doc not updated")
+        if (result.result.nModified === 1) {
+          return h.response(Mongo.statusResponse('doc updated successfully', HttpStatus.OK))
+        }
+        return Boom.badRequest('doc not updated')
       }
       throw Boom.notFound(`Not Found ${req.params.id}`)
     }
@@ -61,9 +61,9 @@ module.exports = (mongoC) => [
     path: '/collections/{collectionName}/{id}',
     handler: async (req, h) => {
       const result = await mongoC.deleteById(escapeHtml(req.params.collectionName), escapeHtml(req.params.id))
-      if (result.result.n === 1)
-          return h.response(Mongo.statusResponse("doc deleted successfully", HttpStatus.OK))
-
+      if (result.result.n === 1) {
+        return h.response(Mongo.statusResponse('doc deleted successfully', HttpStatus.OK))
+      }
       throw Boom.notFound(`Not Found ${req.params.id}`)
     }
   },
